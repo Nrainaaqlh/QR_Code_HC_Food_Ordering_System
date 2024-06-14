@@ -211,7 +211,7 @@ $con->close();
             color: white;
             cursor: pointer;
             height: 30px;
-            width: 105px;
+            min-width: 110px;
             margin-left: 10px;
         }
 

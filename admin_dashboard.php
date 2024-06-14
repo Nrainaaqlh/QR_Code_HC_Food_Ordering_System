@@ -4,10 +4,16 @@ include 'db.php';
 
 global $con;
 
-// Fetch total number of orders
-$sqlTotalOrders = "SELECT COUNT(*) as totalOrders FROM orders";
-$resultTotalOrders = $con->query($sqlTotalOrders);
+// Fetch total number of orders for this month
+$currentMonth = date('m');
+$currentYear = date('Y');
+$sqlTotalOrders = "SELECT COUNT(*) as totalOrders FROM orders WHERE MONTH(orderDate) = ? AND YEAR(orderDate) = ?";
+$statementTotalOrders = $con->prepare($sqlTotalOrders);
+$statementTotalOrders->bind_param('ii', $currentMonth, $currentYear);
+$statementTotalOrders->execute();
+$resultTotalOrders = $statementTotalOrders->get_result();
 $totalOrders = ($resultTotalOrders->num_rows > 0) ? $resultTotalOrders->fetch_assoc()['totalOrders'] : 0;
+$statementTotalOrders->close();
 
 // Fetch total sales
 $currentMonth = date('m');
@@ -126,10 +132,13 @@ $con->close();
             font-size: 15px;
             font-weight: bold;
             margin-bottom: 20px;
+            color: black;
+            text-decoration: underline;
         }
 
         .dashboard-item p {
-            font-size: 12px;
+            font-size: 15px;
+            color: black;
         }
 
         .chart-container {
@@ -175,7 +184,7 @@ $con->close();
 
                 <div id="dashboard-container" class="dashboard-container">
                     <a href="admin_totalOrders.php" class="dashboard-item">
-                        <h3>Total Orders</h3>
+                        <h3>This Month Orders</h3>
                         <p><?php echo $totalOrders; ?></p>
                     </a>
 
@@ -185,7 +194,7 @@ $con->close();
                     </a>
 
                     <a href="admin_totalSales.php" class="dashboard-item">
-                        <h3>Total Sales</h3>
+                        <h3>This Month Sales</h3>
                         <p><?php echo 'RM ' . number_format($totalSales, 2); ?></p>
                     </a>
 

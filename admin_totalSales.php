@@ -19,7 +19,7 @@ if ($result->num_rows > 0) {
     }
 }
 
-$sqlChart = "SELECT DATE(orderDate) as saleDay, COUNT(*) as saleCount FROM orders WHERE DATE_FORMAT(orderDate, '%Y-%m') = '$month' GROUP BY DATE(orderDate) ORDER BY saleDay DESC LIMIT 30";
+$sqlChart = "SELECT DATE(orderDate) as saleDay, SUM(totalAmount) as saleCount FROM orders WHERE DATE_FORMAT(orderDate, '%Y-%m') = '$month' GROUP BY DATE(orderDate) ORDER BY saleDay DESC LIMIT 30";
 $resultChart = $con->query($sqlChart);
 $chartData = array();
 
@@ -149,7 +149,7 @@ if ($resultChart->num_rows > 0) {
                     return "'$date'";
                 }, array_keys($chartData))); ?>],
                 datasets: [{
-                    label: 'Number of Sales',
+                    label: 'Total Sales (RM)',
                     data: [<?php echo implode(',', array_values($chartData)); ?>],
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
