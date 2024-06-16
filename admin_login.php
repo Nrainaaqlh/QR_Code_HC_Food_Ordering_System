@@ -9,13 +9,19 @@ if ($con->connect_error) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $adminUsername = $_POST['adminUsername'];
+    $adminUsername = $con->real_escape_string($_POST['adminUsername']);
     $adminPassword = $_POST['adminPassword'];
 
-    $query = "SELECT * FROM admins WHERE adminUsername = '$adminUsername' AND adminPassword = '$adminPassword'";
-    $result = mysqli_query($con, $query);
+    // Prepare and execute the query to fetch the hashed password
+    $stmt = $con->prepare("SELECT adminPassword FROM admins WHERE adminUsername = ?");
+    $stmt->bind_param("s", $adminUsername);
+    $stmt->execute();
+    $stmt->bind_result($hashedPassword);
+    $stmt->fetch();
+    $stmt->close();
 
-    if ($result->num_rows == 1) {
+    // Verify the provided password against the hashed password
+    if ($hashedPassword && password_verify($adminPassword, $hashedPassword)) {
         $_SESSION['loggedin'] = true;
         header("Location: admin_dashboard.php");
         exit();
@@ -25,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-mysqli_close($con);
+$con->close();
 ?>
 
 <!DOCTYPE html>
@@ -36,8 +42,7 @@ mysqli_close($con);
         body { 
             background-color: #411900;
             font-family: 'Arial', sans-serif;
-            margin-top: 0;
-            margin-left: 0;
+            margin: 0;
             padding: 0;
             overflow-x: hidden;
         }
@@ -46,13 +51,14 @@ mysqli_close($con);
             background-color: #fff;
             box-shadow: 10px 10px 10px 10px rgba(5, 5, 10, 0.1);
             width: 300px;
-            margin: 100px auto;
+            margin: 80px auto;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
         }
 
         #login-container img{
+            margin-top: 0px;
             width: 300px; 
             height: 150px; 
             object-fit: cover; 
@@ -61,8 +67,18 @@ mysqli_close($con);
 
         #login-container h1 {
             color: black;
+            margin-top: 0px;
         }
 
+        #login-container p {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        #forgot{
+            text-align: right;
+        }
+        
         #login-form {
             margin-top: 20px;
         }
@@ -70,7 +86,6 @@ mysqli_close($con);
         #login-form label {
             display: block;
             margin-bottom: 8px;
-            margin-top:15px;
             text-align: left;
             font-weight: bold;
             color: #555;
@@ -79,7 +94,7 @@ mysqli_close($con);
         #login-form input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 0px;
+            margin-bottom: 10px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -100,7 +115,6 @@ mysqli_close($con);
             color: #fff;
             width: 100%;
             padding: 10px 15px;
-            margin-top: 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -114,17 +128,17 @@ mysqli_close($con);
         #error-messages {
             text-align:left;
             font-size: 13px;
-            margin top: 0;
+            margin-top: 0;
             padding: 0;
             color: red;
         }
 
         @media screen and (max-width: 400px) {
             #login-container {
-            width: 80%;
+                width: 80%;
             }
         }
-        </style>
+    </style>
 </head>
 <body >
     <div id="login-container" class="login-container">
@@ -136,15 +150,14 @@ mysqli_close($con);
         <label for="adminUsername">Username:</label>
         <input type="text" id="adminUsername" name="adminUsername" required><br>
 
+        <label for="adminPassword">Password:</label>
+        <input type="password" id="adminPassword" name="adminPassword" required><br>
         <?php if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($error)): ?>
             <div id="error-messages" class="error-messages">
                 <p><?php echo $error; ?></p>
             </div>
         <?php endif; ?>
-
-        <label for="adminPassword">Password:</label>
-        <input type="password" id="adminPassword" name="adminPassword" required><br>
-        <p><a href="admin_forgotPassword.php">Forgot Password?</a></p>
+        <p id="forgot"><a href="admin_forgotPassword.php">Forgot Password?</a></p>
         <button type="submit">Login</button>
     </form>
     

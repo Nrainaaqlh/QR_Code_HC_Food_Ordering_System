@@ -1,7 +1,7 @@
 <?php
 include 'db.php';
 $month = isset($_GET['month']) ? $_GET['month'] : date('Y-m');
-$sqlChart = "SELECT DATE(orderDate) as orderDay, COUNT(*) as orderCount FROM orders WHERE DATE_FORMAT(orderDate, '%Y-%m') = '$month' GROUP BY DATE(orderDate) ORDER BY orderDay DESC LIMIT 30";
+$sqlChart = "SELECT DATE(orderDate) as orderDay, COUNT(*) as orderCount FROM orders WHERE DATE_FORMAT(orderDate, '%Y-%m') = '$month' GROUP BY DATE(orderDate) ORDER BY orderDay DESC LIMIT 31";
 $resultChart = $con->query($sqlChart);
 $chartData = array();
 

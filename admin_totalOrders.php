@@ -157,9 +157,14 @@ if ($resultChart->num_rows > 0) {
             },
             options: {
                 scales: {
+                    x: {
+                        beginAtZero: true,
+                    },
+
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
                     }
+                    
                 }
             }
         });

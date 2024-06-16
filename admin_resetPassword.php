@@ -20,29 +20,32 @@ if (isset($_GET['token'])) {
             $confirm_password = $_POST['confirm_password'];
 
             if ($password === $confirm_password) {
+                // Hash the new password
+                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
                 // Update the password in the admins table
                 $user = $result->fetch_assoc();
                 $email = $user['adminEmail'];
 
                 $stmt = $con->prepare("UPDATE admins SET adminPassword = ?, resetToken = NULL WHERE adminEmail = ?");
-                $stmt->bind_param("ss", $password, $email); // Directly use plain text password
+                $stmt->bind_param("ss", $hashedPassword, $email);
                 if ($stmt->execute()) {
                     $message = "Your password has been reset successfully.";
                     // Redirect to the login page after successful password reset
                     header("Location: admin_login.php");
                     exit();
                 } else {
-                    $message = "Error updating password. Please try again.";
+                    $error = "Error updating password. Please try again.";
                 }
             } else {
-                $message = "Passwords do not match.";
+                $error = "Passwords do not match.";
             }
         }
     } else {
-        $message = "Invalid or expired token.";
+        $error = "Invalid or expired token.";
     }
 } else {
-    $message = "No token provided.";
+    $error = "No token provided.";
 }
 ?>
 
@@ -54,8 +57,7 @@ if (isset($_GET['token'])) {
         body {
             background-color: #411900;
             font-family: 'Arial', sans-serif;
-            margin-top: 0;
-            margin-left: 0;
+            margin: 0;
             padding: 0;
             overflow-x: hidden;
         }
@@ -64,40 +66,47 @@ if (isset($_GET['token'])) {
             background-color: #fff;
             box-shadow: 10px 10px 10px 10px rgba(5, 5, 10, 0.1);
             width: 300px;
-            margin: 100px auto;
+            margin: 80px auto;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
         }
 
-        #reset-password-container img{
+
+        #reset-password-container img {
+            margin-top: 0px;
             width: 300px; 
             height: 150px; 
             object-fit: cover; 
             margin-top: 0px;
         }
 
-        #reset-password h2 {
+        #reset-password-container  h2 {
             text-align: center;
+            margin-top: 0px;
         }
 
-        label{
+        #reset-password-container label {
             display: block;
             margin-bottom: 8px;
-            margin-top:15px;
             text-align: left;
             font-weight: bold;
             color: #555;
         }
 
-        input {
+        #reset-password-container input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 0px;
+            margin-bottom: 10px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
+        #reset-password{
+            margin-top: 20px;
+        }
+
         button {
             background-color: #411900;
             color: #fff;
@@ -109,20 +118,23 @@ if (isset($_GET['token'])) {
             cursor: pointer;
             font-size: 16px;
         }
+
         button:hover {
             background-color: #613316;
         }
+
         .message {
-            text-align:left;
+            text-align: left;
             font-size: 13px;
-            margin top: 0;
+            margin-top: 0;
             padding: 0;
             color: green;
         }
+
         .error {
-            text-align:left;
+            text-align: left;
             font-size: 13px;
-            margin top: 0;
+            margin-top: 0;
             padding: 0;
             color: red;
         }
@@ -130,7 +142,7 @@ if (isset($_GET['token'])) {
 </head>
 <body>
     <div id="reset-password-container">
-    <img src="logo.png" alt="logo">
+        <img src="logo.png" alt="logo">
         <h2>Reset Password</h2>
         <?php if (!empty($message)): ?>
             <p class="<?php echo strpos($message, 'Error') !== false ? 'error' : 'message'; ?>"><?php echo $message; ?></p>

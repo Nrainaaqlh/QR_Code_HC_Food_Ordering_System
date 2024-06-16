@@ -34,28 +34,25 @@ if (isset($_POST["send"])) {
         $mail = new PHPMailer(true);
         try {
             // Server settings
-            $mail->isSMTP();                              // Send using SMTP
-            $mail->Host       = 'smtp.gmail.com';         // Set the SMTP server to send through
-            $mail->SMTPAuth   = true;                     // Enable SMTP authentication
-            $mail->Username   = 'ainarul19@gmail.com';    // SMTP username
-            $mail->Password   = 'jwkvqktftflgaiay';       // SMTP password
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Enable implicit SSL encryption
-            $mail->Port       = 465;                      // TCP port to connect to
+            $mail->isSMTP();                             
+            $mail->Host       = 'smtp.gmail.com';         
+            $mail->SMTPAuth   = true;                    
+            $mail->Username   = 'ainarul19@gmail.com';    
+            $mail->Password   = 'jwkvqktftflgaiay';      
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+            $mail->Port       = 465;                     
 
-            // Recipients
-            $mail->setFrom('ainarul19@gmail.com', 'HC Cafe'); // Sender email and name
-            $mail->addAddress($email); // Add a recipient email
+            $mail->setFrom('ainarul19@gmail.com', 'HC Cafe');
+            $mail->addAddress($email); 
 
-            // Email content
             $mail->isHTML(true);
             $mail->Subject = 'Password Reset Request';
             $mail->Body    = 'Click on the following link to reset your password: <a href="http://localhost/project_PSM/admin_resetPassword.php?token=' . $token . '">Reset Password</a>';
 
-            // Send the email
             $mail->send();
             $message = "A password reset link has been sent to your email.";
         } catch (Exception $e) {
-            $message = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            $error = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
     } else {
         $error = "Email address not found.";
@@ -90,11 +87,14 @@ if (isset($_POST["send"])) {
             height: 150px; 
             object-fit: cover; 
             margin-top: 0px;
+    
         }
 
         #forgot-password-container h2 {
             color: black;
+            margin-top: 0px;
         }
+
         #forgot-password label{
             display: block;
             margin-bottom: 8px;
@@ -135,24 +135,26 @@ if (isset($_POST["send"])) {
             cursor: pointer;
             font-size: 16px;
         }
+
         #forgot-password button:hover {
             background-color: #613316;
         }
+
         .message {
-            text-align:left;
+            text-align: left;
             font-size: 13px;
             margin top: 0;
             padding: 0;
             color: green;
         }
         .error {
-            text-align:left;
+            text-align: left;
             font-size: 13px;
             margin top: 0;
             padding: 0;
             color: red;
         }
-        /* Styling for back button */
+       
         .back-button {
             position: absolute;
             top: 20px;
