@@ -73,19 +73,22 @@ $ordersIncome = fetchOrders('Income');
 // Generate HTML for displaying orders
 $html = '';
 foreach ($ordersIncome as $order) {
-    $html .= '<tr>';
-    $html .= '<td>' . $order['orderID'] . '</td>';
-    $html .= '<td>' . $order['custID'] . '</td>';
-    $html .= '<td>';
-    foreach ($order['orderItems'] as $item) {
-        $html .= $item['itemName'] . ' - Size: ' . $item['size'] . ', Quantity: ' . $item['quantity'] . ', Options: ' . $item['options'] . ', Remark: ' . $item['remark'] . ', Takeaway: ' . $item['takeaway'] . '<br>';
+    foreach ($order['orderItems'] as $index => $item) {
+        $html .= '<tr>';
+        if ($index === 0) { // First item in the order, include order details
+            $html .= '<td rowspan="' . count($order['orderItems']) . '">' . $order['orderID'] . '</td>';
+            $html .= '<td rowspan="' . count($order['orderItems']) . '">' . $order['custID'] . '</td>';
+        }
+        $html .= '<td>' . $item['itemName'] . ' - Size: ' . $item['size'] . ', Quantity: ' . $item['quantity'] . ', Options: ' . $item['options'] . ', Remark: ' . $item['remark'] . ', Takeaway: ' . $item['takeaway'] . '</td>';
+        if ($index === 0) { // First item in the order, include order details
+            $html .= '<td rowspan="' . count($order['orderItems']) . '">' . $order['totalAmount'] . '</td>';
+            $html .= '<td rowspan="' . count($order['orderItems']) . '">' . $order['orderDate'] . '</td>';
+            $html .= '<td rowspan="' . count($order['orderItems']) . '"><a href="admin_receiveOrder.php?order_id=' . $order['orderID'] . '">Update Status</a></td>';
+        }
+        $html .= '</tr>';
     }
-    $html .= '</td>';
-    $html .= '<td>' . $order['totalAmount'] . '</td>';
-    $html .= '<td>' . $order['orderDate'] . '</td>';
-    $html .= '<td><a href="admin_receiveOrder.php?order_id=' . $order['orderID'] . '">Update Status</a></td>';
-    $html .= '</tr>';
 }
+
 
 // Output the generated HTML
 echo $html;

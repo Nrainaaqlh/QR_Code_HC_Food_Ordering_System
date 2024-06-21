@@ -168,24 +168,6 @@ if ($orderResult->num_rows > 0) {
     </div>
 
     <script>
-        document.querySelectorAll('.star-rating input[type="radio"]').forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                var formData = new FormData(document.getElementById('reviewForm'));
-                fetch('', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        alert('Thank you for your order and review!');
-                        window.location.href = 'customer_homepage.php';
-                    } else {
-                        alert('An error occurred. Please try again.');
-                    }
-                });
-            });
-        });
 
         var logoutTimer = setTimeout(function() {
             window.location.href = 'customer_logout.php';
