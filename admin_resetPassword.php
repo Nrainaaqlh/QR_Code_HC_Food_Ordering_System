@@ -141,18 +141,21 @@ if (isset($_GET['token'])) {
     </style>
 </head>
 <body>
-    <div id="reset-password-container">
+<div id="reset-password-container">
         <img src="logo.png" alt="logo">
         <h2>Reset Password</h2>
+        <?php if (!empty($error)): ?>
+            <p class="error"><?php echo $error; ?></p>
+        <?php endif; ?>
         <?php if (!empty($message)): ?>
-            <p class="<?php echo strpos($message, 'Error') !== false ? 'error' : 'message'; ?>"><?php echo $message; ?></p>
+            <p class="message"><?php echo $message; ?></p>
         <?php endif; ?>
         <?php if (isset($token) && $result->num_rows > 0): ?>
         <form id="reset-password" action="admin_resetPassword.php?token=<?php echo htmlspecialchars($token); ?>" method="post">
             <label for="password">New Password:</label>
             <input type="password" id="password" name="password" required><br>
             <label for="confirm_password">Confirm Password:</label>
-            <input type="password" id="confirm_password" name="confirm_password" required><br>
+            <input type="password" id="confirm_password" name="confirm_password" required><br> 
             <button type="submit" name="reset">Reset Password</button>
         </form>
         <?php endif; ?>

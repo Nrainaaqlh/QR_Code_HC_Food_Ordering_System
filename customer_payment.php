@@ -31,10 +31,13 @@ try {
         $product_data = [
             'name' => $item['name'],
         ];
+
         if (!empty($item['description'])) {
             $product_data['description'] = $item['description'];
         }
-        if (!empty($item['image'])) {
+
+        if (!empty($item['image']) && filter_var($item['image'], FILTER_VALIDATE_URL)) {
+            // Ensure $item['image'] is a valid URL
             $product_data['images'] = [$item['image']];
         }
 
@@ -49,7 +52,7 @@ try {
     }, $_SESSION['cart']);
 
     $session = \Stripe\Checkout\Session::create([
-        'payment_method_types' => ['card','fpx','grabpay'],
+        'payment_method_types' => ['card', 'fpx', 'grabpay'],
         'line_items' => $line_items,
         'mode' => 'payment',
         'success_url' => 'http://localhost/project_PSM/customer_submitorder.php?session_id={CHECKOUT_SESSION_ID}&order=' . urlencode(json_encode($_SESSION['cart'])),

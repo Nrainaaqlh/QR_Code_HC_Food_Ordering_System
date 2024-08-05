@@ -1,31 +1,28 @@
 <?php
-// Import PHPMailer classes into the global namespace
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Required files
 require_once 'PHP mailer/phpmailer/src/Exception.php';
 require_once 'PHP mailer/phpmailer/src/PHPMailer.php';
 require_once 'PHP mailer/phpmailer/src/SMTP.php';
-require_once 'db.php'; // Update with your actual database connection file
+require_once 'db.php'; 
 
-$error = ''; // Initialize the error variable
+$error = ''; 
 
 if (isset($_POST["send"])) {
 
     $email = $_POST["email"];
 
-    // Check if the email exists in the admins table
     $stmt = $con->prepare("SELECT * FROM admins WHERE adminEmail = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        // Generate a token for the password reset link
+      
         $token = bin2hex(random_bytes(32));
 
-        // Store the token in the admins table
         $stmt = $con->prepare("UPDATE admins SET resetToken = ? WHERE adminEmail = ?");
         $stmt->bind_param("ss", $token, $email);
         $stmt->execute();

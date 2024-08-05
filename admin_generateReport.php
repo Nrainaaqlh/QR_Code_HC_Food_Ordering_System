@@ -68,7 +68,11 @@
                         }
 
                         if ($report_type == 'sales') {
-                            $sql = "SELECT oi.itemID, m.itemName, SUM(oi.quantity) AS total_quantity, SUM(totalAmount) AS total_sales
+                            $sql = "SELECT oi.itemID, m.itemName, SUM(oi.quantity) AS total_quantity,
+                                    SUM(CASE
+                                        WHEN oi.size = 2 THEN (m.itemPrice + 1) * oi.quantity
+                                        ELSE m.itemPrice * oi.quantity
+                                    END) AS total_sales
                                     FROM order_items oi
                                     JOIN orders o ON oi.orderID = o.orderID
                                     JOIN menu_item m ON oi.itemID = m.itemID

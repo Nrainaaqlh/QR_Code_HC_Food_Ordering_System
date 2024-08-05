@@ -121,14 +121,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="container-fluid page-wrapper">
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
         <div class="p-3">
-           
-                <script> <?php if (isset($flashMessage)) : ?>
+            <?php if (isset($flashMessage)) : ?>
                 <div id="flashMessage" class="alert alert-success alert-dismissible fade show flash-message" role="alert">
                     <?php echo $flashMessage; ?>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
+                <script>
                     $(document).ready(function () {
                         $('#flashMessage').fadeIn().delay(3000).fadeOut('slow');
                     });
@@ -338,8 +338,6 @@ $(document).ready(function () {
         });
 
 });
-
-
 </script>
 </body>
 </html>

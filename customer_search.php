@@ -26,6 +26,17 @@ if (!empty($searchQuery)) {
 // Execute the query to fetch items
 $result = $con->query($sql);
 
+// Fetch the most ordered items
+$mostOrderedSql = "SELECT itemID, COUNT(*) as orderCount FROM order_items GROUP BY itemID ORDER BY orderCount DESC LIMIT 5";
+$mostOrderedResult = $con->query($mostOrderedSql);
+$mostOrderedItems = [];
+
+if ($mostOrderedResult->num_rows > 0) {
+    while ($row = $mostOrderedResult->fetch_assoc()) {
+        $mostOrderedItems[] = $row['itemID'];
+    }
+}
+
 // Check if items are found
 if ($result->num_rows > 0) {
     // Loop through each item
@@ -33,7 +44,11 @@ if ($result->num_rows > 0) {
         ?>
         <div class="product">
             <img src="<?php echo $row['itemImage']; ?>" alt="<?php echo htmlspecialchars($row['itemName']); ?>">
-            <h3><?php echo htmlspecialchars($row['itemName']); ?></h3>
+            <h3><?php echo htmlspecialchars($row['itemName']); ?>
+                <?php if (in_array($row['itemID'], $mostOrderedItems)) { ?>
+                    👍
+                <?php } ?>
+            </h3>
             <p class="itemPrice">RM<?php echo $row['itemPrice']; ?></p>
             <button onclick="addToCart('<?php echo $row['itemID']; ?>')">Add to Cart</button>
         </div>
